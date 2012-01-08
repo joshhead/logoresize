@@ -38,30 +38,85 @@ module LogoThumb
   def get_trim_properties(magick_string)
     if (magick_string =~ /(\d+)x(\d+) (\d+)x(\d+)\+(\d+)\+(\d+)/)
       prop = Hash.new
-      prop[:trimmed_width] = $1
-      prop[:trimmed_height] = $2
-      prop[:orig_width] = $3
-      prop[:orig_height] = $4
-      prop[:offset_x] = $5
-      prop[:offset_y] = $6
+      prop[:trimmed_width] = $1.to_i
+      prop[:trimmed_height] = $2.to_i
+      prop[:orig_width] = $3.to_i
+      prop[:orig_height] = $4.to_i
+      prop[:offset_x] = $5.to_i
+      prop[:offset_y] = $6.to_i
       return prop
     else
       return nil
     end
   end
 
+  # The whole point of this method is to handle logos
+  # that have a border on some but not all sides.
+  #
+  # Taking a rectangle instead of a point gives a better
+  # color approximation if the pixels in the colored border
+  # are almost but not exactly the same. We will take the
+  # average color of the whole area.
   def get_bg_sample_rect(trim_properties)
-    rect = Hash.new
-    if (trim_properties.nil? || true)
+    if (trim_properties.nil?)
       # Make a blind guess.
       # Any corner should be a reasonable bet
       # If there was a border at all.
+      rect = Hash.new
       rect[:x] = 0
       rect[:y] = 0
       rect[:w] = 1
       rect[:h] = 1
+      return rect
+    else
+      # Look at some rectangles of color
+      # that were cropped out of the original image.
+      # Pick the biggest one.
+      tp = trim_properties
+      rects = Array.new
+      # Left side
+      # |x--|
+      # |x  |
+      # |x__|
+      rects << {
+        :x => 0,
+        :y => 0,
+        :w => tp[:offset_x],
+        :h => tp[:orig_height]
+      }
+      # Right side
+      # |--x|
+      # |  x|
+      # |__x|
+      rects << {
+        :x => tp[:offset_x] + tp[:trimmed_width],
+        :y => 0,
+        :w => tp[:orig_width] - (tp[:trimmed_width] + tp[:offset_x]),
+        :h => tp[:orig_height]
+      }
+      # Top area
+      # |xxx|
+      # |   |
+      # |___|
+      rects << {
+        :x => 0,
+        :y => 0,
+        :w => tp[:orig_width],
+        :h => tp[:offset_y]
+      }
+      # Bottom area
+      # |---|
+      # |   |
+      # |xxx|
+      rects << {
+        :x => 0,
+        :y => tp[:offset_y] + tp[:trimmed_height],
+        :w => tp[:orig_width],
+        :h => tp[:orig_height] - (tp[:trimmed_height] + tp[:offset_y])
+      }
+      # Return biggest rect
+      return rects.sort { |a, b| (b[:w] * b[:h]) <=> (a[:w] * a[:h]) }.first
     end
-    return rect
   end
 
   # Return an image that of width x height dimensions
