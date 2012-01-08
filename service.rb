@@ -3,6 +3,7 @@ require 'sinatra'
 require 'net/http'
 require 'RMagick'
 require 'logothumb'
+include LogoThumb
 
 get '/' do
   "try visiting /logoresize/?image=http://example.com/img.png&width=200&height=100&padding=20"
