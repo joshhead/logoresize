@@ -1,3 +1,5 @@
+# Josh Headapohl 2012
+
 require 'rubygems'
 require 'sinatra'
 require 'net/http'

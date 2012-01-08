@@ -1,3 +1,5 @@
+# Josh Headapohl 2012
+
 module LogoThumb
 
   def get_new_width_height(bounds_width, bounds_height, padding, rect_width, rect_height)
@@ -35,8 +37,8 @@ module LogoThumb
   # RMagick may have better ways to get at post-crop offset information.
   # I couldn't find it, so I'm parsing it from the Image.inspect string.
   # Will return nil if parsing fails.
-  def get_trim_properties(magick_string)
-    if (magick_string =~ /(\d+)x(\d+) (\d+)x(\d+)\+(\d+)\+(\d+)/)
+  def get_trim_properties(image)
+    if (image.inspect =~ /(\d+)x(\d+) (\d+)x(\d+)\+(\d+)\+(\d+)/)
       prop = Hash.new
       prop[:trimmed_width] = $1.to_i
       prop[:trimmed_height] = $2.to_i
@@ -140,15 +142,20 @@ module LogoThumb
     end
     orig = Magick::ImageList.new.from_blob(blob)
     trimmed_img = get_trimmed_image(orig, "2%")
-    trimmed_magick_string = trimmed_img.inspect
     scaled_width, scaled_height =
       get_new_width_height(width, height, padding, trimmed_img.columns, trimmed_img.rows)
     scaled_img = trimmed_img.resize(scaled_width, scaled_height)
     if (orig.rows == trimmed_img.rows && orig.columns == trimmed_img.columns)
-      bg_img = Magick::Image.new(width, height) {self.background_color = "transparent"; self.format = "PNG" }
+      if (scaled_img.format == "PNG")
+        bg_color = "transparent"
+      else
+        # Setting a transparent background for a JPEG results in a black background.
+        # I think white is less ugly here.
+        bg_color = "white"
+      end
+      bg_img = Magick::Image.new(width, height) {self.background_color = bg_color; self.format = scaled_img.format }
     else
-      rect = get_bg_sample_rect(get_trim_properties(trimmed_magick_string))
-      STDERR.puts rect.inspect
+      rect = get_bg_sample_rect(get_trim_properties(trimmed_img))
       bg_img = get_background_image(orig, width, height, rect[:x], rect[:y], rect[:w], rect[:h])
     end
     thumbnail = bg_img.composite(scaled_img, Magick::CenterGravity, Magick::OverCompositeOp)
