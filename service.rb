@@ -17,7 +17,7 @@ get '/logoresize/?' do
   content_type 'image/png'
   headers 'Content-Disposition' => "inline; filename=#{File.basename(uri)}"
   begin
-    img = create_thumbnail(Net::HTTP.get(URI.parse(uri)), width, height, padding).to_blob
+    img = create_thumbnail(Net::HTTP.get(URI.parse(uri)), width, height, padding).to_blob {self.format = "PNG"}
   rescue
     return create_thumbnail(Magick::ImageList.new("error.png").to_blob, width, height, padding).to_blob
   end
