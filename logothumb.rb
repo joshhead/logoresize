@@ -42,6 +42,7 @@ def get_background_image(orig, width, height, x, y, w, h)
   return background
 end
 
+# blob should be a string containing binary image data.
 def create_thumbnail(blob, width, height, padding)
   orig = Magick::ImageList.new.from_blob(blob)
   trimmed_img = get_trimmed_image(orig, "2%")
@@ -52,4 +53,8 @@ def create_thumbnail(blob, width, height, padding)
   thumbnail = bg_img.composite(scaled_img, Magick::CenterGravity, Magick::OverCompositeOp)
   [orig, trimmed_img, scaled_img, bg_img].each { |img| img.destroy! }
   return thumbnail
+end
+
+def get_file(uri)
+  Net::HTTP.get(URI.parse(uri))
 end
