@@ -44,12 +44,21 @@ end
 
 # blob should be a string containing binary image data.
 def create_thumbnail(blob, width, height, padding)
+  width = 1 if (width < 1)
+  height = 1 if (height < 1)
+  if (2 * padding > [width, height].min)
+    padding = ([width, height].min / 4)
+  end
   orig = Magick::ImageList.new.from_blob(blob)
   trimmed_img = get_trimmed_image(orig, "2%")
   scaled_width, scaled_height =
     get_new_width_height(width, height, padding, trimmed_img.columns, trimmed_img.rows)
   scaled_img = trimmed_img.resize(scaled_width, scaled_height)
-  bg_img = get_background_image(orig, width, height, 0, 0, 3, 3)
+  if (orig.rows == trimmed_img.rows && orig.columns == trimmed_img.columns)
+    bg_img = Magick::Image.new(width, height) {self.background_color = "transparent"}
+  else
+    bg_img = get_background_image(orig, width, height, 0, 0, 3, 3)
+  end
   thumbnail = bg_img.composite(scaled_img, Magick::CenterGravity, Magick::OverCompositeOp)
   [orig, trimmed_img, scaled_img, bg_img].each { |img| img.destroy! }
   return thumbnail
