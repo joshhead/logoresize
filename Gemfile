@@ -1,2 +1,3 @@
 source "http://rubygems.org"
-gem "rmagick"
+gem "rmagick", :require => "RMagick"
+gem "sinatra"
