@@ -8,7 +8,10 @@ require 'logothumb'
 include LogoThumb
 
 get '/' do
-  "try visiting /logoresize/?image=http://example.com/img.png&width=200&height=100&padding=20"
+  example = '/logoresize/?image=http://dl.dropbox.com/u/17628919/memsql_1.png&width=200&height=100&padding=20'
+  "<!DOCTYPE html><html><head><title>Logo Scaling Service</title></head>" +
+  "<body>Try <a href='#{example}'>#{example}</a>" +
+  "</body></html>"
 end
 
 get '/logoresize/?' do
