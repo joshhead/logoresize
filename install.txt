@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Josh Headapohl 2012
+
+# To install, just run this as a script as root.
+# Or follow along and run the commands manually.
+
+# Need ruby/apache/passenger, rmagick and sinatra gems.
+# libmagickcore-dev and libmagickwand-dev are build-depends for rmagick.
+apt-get install ruby1.8 rubygems1.8 apache2 libapache2-mod-passenger libmagickcore-dev libmagickwand-dev 
+gem install sinatra
+gem install rmagick
+
+# I was getting rubygems errors about invalid specs.
+# Here is a quick fix.
+sed -i /var/lib/gems/1.8/specifications/* -e 's/ 00:00:00.000000000Z//'
+
+# The default apache config will work except that the document root
+# needs to be /var/www/public instead of /var/www.
+# Edit the file, or just run the following command.
+sed -i /etc/apache2/sites-enabled/000-default -e 's|/var/www$|/var/www/public|'
