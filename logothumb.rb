@@ -23,7 +23,10 @@ module LogoThumb
     return [new_width.to_i, new_height.to_i]
   end
 
-  # Convenience method so fuzz property doesn't have to get messed up
+  # Convenience method so fuzz property doesn't have to get messed up.
+  # To specify the fuzz amount for rMagick, it has to be set as
+  # a property of the image object. But I don't want to change the object
+  # that is passed in. So this method sets the property then changes it back.
   def get_trimmed_image(orig, fuzz=nil)
     old_fuzz = orig.fuzz
     if (fuzz)
@@ -121,7 +124,7 @@ module LogoThumb
     end
   end
 
-  # Return an image that of width x height dimensions
+  # Return an image that is of width x height dimensions
   # Based on the average color from the rectangle at x, y
   # and of size w x h in the original image.
   def get_background_image(orig, width, height, x, y, w, h)
