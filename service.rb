@@ -4,7 +4,7 @@ require 'rubygems'
 require 'sinatra'
 require 'net/http'
 require 'RMagick'
-require 'logothumb'
+require './logothumb'
 include LogoThumb
 
 get '/' do
@@ -29,7 +29,7 @@ get '/logoresize/?' do
     else
       content_type 'application/octet-stream'
     end
-    headers 'Content-Disposition' => "attachment; filename=#{File.basename(uri)}"
+    headers 'Content-Disposition' => "inline; filename=#{File.basename(uri)}"
     return img.to_blob
   rescue
     content_type 'image/png'
