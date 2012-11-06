@@ -1,0 +1,22 @@
+sudo shutdown -h
+sudo apt-get update
+sudo apt-get upgrade
+sudo shutdown -h now
+ifconfig 
+ls
+cd /var/www
+ls
+sudo apt-get install apache2 ruby1.8 rubygems1.8 libmagickcore-dev libmagickwand-dev 
+ls /var/www
+sudo gem install sinatra
+sudo gem install rmagick
+irb
+ls
+sed /var/lib/gems/1.8/specifications/* -e 's/00:00:000000000Z//'
+sed /var/lib/gems/1.8/specifications/* -e 's/ 00:00:0000000000Z//'
+sed /var/lib/gems/1.8/specifications/* -e 's/ 00:00.0000000000Z//'
+sed /var/lib/gems/1.8/specifications/* -e 's/ 00:00.000000000Z//'
+sed /var/lib/gems/1.8/specifications/* -e 's/ 00:00:00.000000000Z//'
+sudo sed -i /var/lib/gems/1.8/specifications/* -e 's/ 00:00:00.000000000Z//'
+irb
+sudo gem install passenger
